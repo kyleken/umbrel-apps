@@ -9,7 +9,7 @@ services:
 
   server:
     # Set by the "Build MailCraft images" workflow on every build.
-    image: ghcr.io/OWNER/mailcraft-selkies:0.0.0
+    image: ghcr.io/kyleken/mailcraft-selkies:0.12.0@sha256:8e6c50679fc57acfeb5d785fe7292a194444c1c7f8b8364350cf9d2f4275e37a
     restart: on-failure
     stop_grace_period: 30s
     shm_size: "1gb"

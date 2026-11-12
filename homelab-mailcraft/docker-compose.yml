@@ -12,7 +12,7 @@ services:
   # its connections to Neko's web server on the host.
   relay:
     # Set by the "Build MailCraft images" workflow on every build.
-    image: ghcr.io/OWNER/mailcraft-neko:0.0.0
+    image: ghcr.io/kyleken/mailcraft-neko:0.12.0@sha256:55add01c3f84f03fbc23566a085ed37fd461561e3cd1c39312ce3a1e111fd936
     restart: on-failure
     user: "1000:1000"
     entrypoint: ["socat", "TCP-LISTEN:8080,fork,reuseaddr", "TCP:host.docker.internal:52480"]
@@ -21,7 +21,7 @@ services:
 
   server:
     # Set by the "Build MailCraft images" workflow on every build.
-    image: ghcr.io/OWNER/mailcraft-neko:0.0.0
+    image: ghcr.io/kyleken/mailcraft-neko:0.12.0@sha256:55add01c3f84f03fbc23566a085ed37fd461561e3cd1c39312ce3a1e111fd936
     restart: on-failure
     stop_grace_period: 30s
     # On the host's network so Neko can see the Umbrel's LAN and Tailscale addresses and take

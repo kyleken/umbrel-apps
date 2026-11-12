@@ -3,7 +3,7 @@ id: homelab-mailcraft
 category: files
 name: MailCraft (Neko)
 # Set by the "Build MailCraft images" workflow on every build.
-version: "0.0.0"
+version: "0.12.0"
 tagline: Your mail, calendar, contacts and tasks, in the browser
 icon: https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/assets/app-icon/hicolor/256x256/apps/io.github.billsecond.mailcraft.png
 description: >-
@@ -30,7 +30,7 @@ gallery:
   - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/calendar-week.png
   - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/mail-dark.png
 releaseNotes: >-
-  Built from MailCraft's latest release. See https://github.com/UCS-Care-Group/mailcraft/releases
+  Built from MailCraft v0.12.0. See https://github.com/UCS-Care-Group/mailcraft/releases
 dependencies: []
 port: 3891
 path: ""
