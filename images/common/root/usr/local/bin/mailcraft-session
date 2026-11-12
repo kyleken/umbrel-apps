@@ -1,0 +1,55 @@
+#!/bin/bash
+# Starts MailCraft inside the browser-streamed desktop, with the pieces a normal Linux desktop
+# would provide and a bare container does not:
+#   - a private session D-Bus (everything below talks over it)
+#   - GNOME Keyring, unlocked, so "remember my password" in MailCraft works and survives restarts
+#   - the XDG desktop portal with the GTK backend, which MailCraft uses for Open/Save/Attach
+# MailCraft is restarted if it exits, so closing the window by accident is harmless.
+set -u
+
+# 1. Run everything on a session bus of our own (portal and keyring are D-Bus activated on it).
+if [ -z "${MAILCRAFT_SESSION_BUS:-}" ]; then
+  export MAILCRAFT_SESSION_BUS=1
+  exec dbus-run-session -- "$0" "$@"
+fi
+
+log() { echo "mailcraft-session: $*" >&2; }
+
+# The desktop session may not inherit the container's environment; s6-overlay keeps a copy.
+from_container_env() {
+  local name=$1 file=/run/s6/container_environment/$1
+  if [ -z "${!name:-}" ] && [ -r "$file" ]; then
+    export "$name=$(cat "$file")"
+  fi
+}
+from_container_env MAILCRAFT_KEYRING_PASSWORD
+from_container_env TZ
+
+# Sign-in pages open in the container's Firefox; the portal uses its GTK backend (portals.conf).
+export BROWSER="${BROWSER:-firefox-esr}"
+export XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP:-labwc}"
+
+# Bus-activated services (portal, keyring) need to know which display to draw on.
+dbus-update-activation-environment DISPLAY WAYLAND_DISPLAY XDG_RUNTIME_DIR XDG_CURRENT_DESKTOP \
+  2>/dev/null || true
+
+# 2. Keyring. The keyring file lives under $HOME (/config, the persistent volume) and is
+#    encrypted with MAILCRAFT_KEYRING_PASSWORD. The first start creates it with that password.
+mkdir -p "$HOME/.local/share/keyrings"
+if [ -z "${MAILCRAFT_KEYRING_PASSWORD:-}" ]; then
+  log "MAILCRAFT_KEYRING_PASSWORD is empty: saved mail passwords are kept unencrypted in /config"
+fi
+eval "$(printf '%s' "${MAILCRAFT_KEYRING_PASSWORD:-}" \
+  | gnome-keyring-daemon --unlock --components=secrets)" \
+  || log "gnome-keyring could not start; MailCraft will ask for passwords each time it starts"
+export GNOME_KEYRING_CONTROL
+
+# A folder for files moved in and out through the browser (both apps' file transfer panels).
+mkdir -p "$HOME/Files"
+
+# 3. Start MailCraft, and start it again whenever it exits.
+while true; do
+  mailcraft "$@"
+  log "MailCraft exited with status $?; starting it again in 3 seconds"
+  sleep 3
+done

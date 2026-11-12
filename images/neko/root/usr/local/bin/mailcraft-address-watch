@@ -1,0 +1,23 @@
+#!/bin/bash
+# Restarts Neko's server when this machine's LAN or Tailscale address changes (for example when
+# Umbrel's Tailscale app starts after this one), so the stream keeps working without a restart.
+# Neko only reads its advertised addresses when it starts.
+set -u
+
+interval=${MAILCRAFT_ADDRESS_CHECK_SECONDS:-30}
+
+if [ -n "${NEKO_WEBRTC_NAT1TO1:-}" ]; then
+  echo "address-watch: NEKO_WEBRTC_NAT1TO1 is set by hand; not watching"
+  exec sleep infinity
+fi
+
+last=$(/usr/local/bin/mailcraft-addresses)
+while sleep "$interval"; do
+  now=$(/usr/local/bin/mailcraft-addresses)
+  if [ "$now" != "$last" ]; then
+    echo "address-watch: addresses changed from '$last' to '$now'; restarting Neko"
+    if supervisorctl -c /etc/neko/supervisord.conf restart neko; then
+      last=$now
+    fi
+  fi
+done

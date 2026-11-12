@@ -1,0 +1,22 @@
+#!/bin/bash
+# Prints the addresses browsers can use to reach this machine, space-separated, for Neko's
+# WebRTC (NEKO_WEBRTC_NAT1TO1). Needs the container on the host's network (network_mode: host).
+#   - the LAN address (source address of the default route)
+#   - the Tailscale address (tailscale0, created by Umbrel's Tailscale app)
+#   - anything in MAILCRAFT_EXTRA_ADDRESSES (space-separated IPs)
+set -u
+
+addrs=()
+
+lan=$(ip -4 route get 1.1.1.1 2>/dev/null \
+  | awk '{for (i = 1; i < NF; i++) if ($i == "src") { print $(i + 1); exit }}')
+[ -n "$lan" ] && addrs+=("$lan")
+
+ts=$(ip -4 -o addr show dev tailscale0 2>/dev/null | awk '{split($4, a, "/"); print a[1]; exit}')
+[ -n "$ts" ] && addrs+=("$ts")
+
+for extra in ${MAILCRAFT_EXTRA_ADDRESSES:-}; do
+  addrs+=("$extra")
+done
+
+echo "${addrs[*]}"

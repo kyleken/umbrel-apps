@@ -1,0 +1,14 @@
+#!/bin/bash
+# Starts Neko's server with the addresses it should give browsers for the video stream.
+# Replaces the base image's `neko serve` command (see the Dockerfile).
+set -u
+
+# A space-separated list; Neko splits it into addresses. (With none, Neko would fall back to
+# looking up the public internet address, which isn't reachable from the LAN or tailnet.)
+if [ -z "${NEKO_WEBRTC_NAT1TO1:-}" ]; then
+  NEKO_WEBRTC_NAT1TO1=$(/usr/local/bin/mailcraft-addresses)
+  export NEKO_WEBRTC_NAT1TO1
+fi
+
+echo "neko-serve: advertising ${NEKO_WEBRTC_NAT1TO1:-no addresses} to browsers"
+exec /usr/bin/neko serve --server.static "/var/www"

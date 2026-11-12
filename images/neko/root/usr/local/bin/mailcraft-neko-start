@@ -1,0 +1,12 @@
+#!/bin/bash
+# Container entry point: makes sure the data folders belong to the neko user, then hands over
+# to Neko's supervisor, which runs the X server, Neko, Openbox, MailCraft and the address watcher.
+set -u
+
+for dir in /home/neko/.config/mailcraft /home/neko/.local/share/keyrings /home/neko/.mozilla \
+  /home/neko/Files; do
+  mkdir -p "$dir"
+  chown neko:neko "$dir"
+done
+
+exec /usr/bin/supervisord -c /etc/neko/supervisord.conf

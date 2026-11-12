@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: homelab-mailcraft_relay_1
+      APP_PORT: 8080
+      # Neko has its own login (any name + the app password Umbrel shows).
+      PROXY_AUTH_ADD: "false"
+
+  # Umbrel's proxy can't reach a container on the host network directly, so this forwards
+  # its connections to Neko's web server on the host.
+  relay:
+    # Set by the "Build MailCraft images" workflow on every build.
+    image: ghcr.io/OWNER/mailcraft-neko:0.0.0
+    restart: on-failure
+    user: "1000:1000"
+    entrypoint: ["socat", "TCP-LISTEN:8080,fork,reuseaddr", "TCP:host.docker.internal:52480"]
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  server:
+    # Set by the "Build MailCraft images" workflow on every build.
+    image: ghcr.io/OWNER/mailcraft-neko:0.0.0
+    restart: on-failure
+    stop_grace_period: 30s
+    # On the host's network so Neko can see the Umbrel's LAN and Tailscale addresses and take
+    # the video stream's connections on them directly.
+    network_mode: host
+    shm_size: "2gb"
+    environment:
+      NEKO_SERVER_BIND: ":52480"
+      NEKO_WEBRTC_UDPMUX: 52481
+      NEKO_WEBRTC_TCPMUX: 52481
+      NEKO_MEMBER_MULTIUSER_ADMIN_PASSWORD: ${APP_PASSWORD}
+      # A password nobody is given, so every login is the admin (who can type and upload).
+      NEKO_MEMBER_MULTIUSER_USER_PASSWORD: ${APP_SEED}
+      # Encrypts the keyring that holds MailCraft's remembered mail passwords.
+      MAILCRAFT_KEYRING_PASSWORD: ${APP_SEED}
+    volumes:
+      - ${APP_DATA_DIR}/data/mailcraft:/home/neko/.config/mailcraft
+      - ${APP_DATA_DIR}/data/keyrings:/home/neko/.local/share/keyrings
+      - ${APP_DATA_DIR}/data/firefox:/home/neko/.mozilla
+      - ${APP_DATA_DIR}/data/files:/home/neko/Files
+      - /etc/localtime:/etc/localtime:ro

@@ -1,0 +1,29 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      APP_HOST: homelab-mailcraft-https_server_1
+      # Selkies' plain-HTTP port, meant to sit behind a proxy that adds HTTPS (umbrelOS does).
+      APP_PORT: 3000
+
+  server:
+    # Set by the "Build MailCraft images" workflow on every build.
+    image: ghcr.io/OWNER/mailcraft-selkies:0.0.0
+    restart: on-failure
+    stop_grace_period: 30s
+    shm_size: "1gb"
+    environment:
+      PUID: 1000
+      PGID: 1000
+      # Umbrel's login protects the app, so Selkies' own login stays off (no PASSWORD).
+      # Encrypts the keyring that holds MailCraft's remembered mail passwords.
+      MAILCRAFT_KEYRING_PASSWORD: ${APP_SEED}
+      # No terminal or command running from the browser...
+      HARDEN_DESKTOP: "true"
+      # ...but keep file transfers, for attachments. Files go to and from the Files folder.
+      SELKIES_FILE_TRANSFERS: "upload,download"
+      SELKIES_UI_SIDEBAR_SHOW_FILES: "true"
+      FILE_MANAGER_PATH: /config/Files
+    volumes:
+      - ${APP_DATA_DIR}/data:/config

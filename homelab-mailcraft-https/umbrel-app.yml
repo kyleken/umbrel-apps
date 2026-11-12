@@ -1,0 +1,49 @@
+manifestVersion: "2.0"
+id: homelab-mailcraft-https
+category: files
+name: MailCraft (HTTPS)
+# Set by the "Build MailCraft images" workflow on every build.
+version: "0.0.0"
+tagline: Your mail, calendar, contacts and tasks, in the browser
+icon: https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/assets/app-icon/hicolor/256x256/apps/io.github.billsecond.mailcraft.png
+description: >-
+  MailCraft is an open-source mail, calendar, contacts and tasks program in the style of
+  Outlook: a folder pane, a message list with a reading pane, conversations, flags, categories,
+  rules, a calendar with recurring meetings, people and to-dos. It works with IMAP and SMTP
+  servers, Microsoft 365 and Outlook.com, Gmail (with an app password) and Exchange servers.
+
+
+  This app runs one copy of the MailCraft desktop program on your Umbrel and streams its window
+  to your browser with Selkies over HTTPS, so every computer you open it from sees the same
+  mailbox. The picture follows your browser window's size.
+
+
+  Opens over HTTPS. To avoid the browser's certificate warning, install Umbrel's certificate
+  from Settings > Advanced > HTTPS access on each computer you use. Files you want to attach go
+  through the file panel in Selkies' sidebar, and appear in MailCraft's Attach dialog under Files.
+developer: UCS Care Group
+website: https://mailcraft.work
+submitter: Homelab
+submission: https://github.com/UCS-Care-Group/mailcraft
+repo: https://github.com/UCS-Care-Group/mailcraft
+support: https://github.com/UCS-Care-Group/mailcraft/issues
+gallery:
+  - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/mail-light.png
+  - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/calendar-week.png
+  - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/mail-dark.png
+releaseNotes: >-
+  Built from MailCraft's latest release. See https://github.com/UCS-Care-Group/mailcraft/releases
+dependencies: []
+port: 3892
+path: ""
+defaultUsername: ""
+requiresHttps: true
+torOnly: false
+environment:
+  - name: TZ
+    services:
+      - server
+    default: America/Chicago
+    note: >-
+      Your time zone, for the calendar and message times (a name like America/Chicago or
+      Europe/London).

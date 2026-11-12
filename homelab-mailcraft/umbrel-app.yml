@@ -1,0 +1,64 @@
+manifestVersion: 1
+id: homelab-mailcraft
+category: files
+name: MailCraft (Neko)
+# Set by the "Build MailCraft images" workflow on every build.
+version: "0.0.0"
+tagline: Your mail, calendar, contacts and tasks, in the browser
+icon: https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/assets/app-icon/hicolor/256x256/apps/io.github.billsecond.mailcraft.png
+description: >-
+  MailCraft is an open-source mail, calendar, contacts and tasks program in the style of
+  Outlook: a folder pane, a message list with a reading pane, conversations, flags, categories,
+  rules, a calendar with recurring meetings, people and to-dos. It works with IMAP and SMTP
+  servers, Microsoft 365 and Outlook.com, Gmail (with an app password) and Exchange servers.
+
+
+  This app runs one copy of the MailCraft desktop program on your Umbrel and streams its window
+  to your browser with Neko, so every computer you open it from sees the same mailbox.
+
+
+  Sign in with any name and the password shown on this page. Files you want to attach go through
+  the file transfer panel in Neko's sidebar, and appear in MailCraft's Attach dialog under Files.
+developer: UCS Care Group
+website: https://mailcraft.work
+submitter: Homelab
+submission: https://github.com/UCS-Care-Group/mailcraft
+repo: https://github.com/UCS-Care-Group/mailcraft
+support: https://github.com/UCS-Care-Group/mailcraft/issues
+gallery:
+  - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/mail-light.png
+  - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/calendar-week.png
+  - https://raw.githubusercontent.com/UCS-Care-Group/mailcraft/main/docs/images/mail-dark.png
+releaseNotes: >-
+  Built from MailCraft's latest release. See https://github.com/UCS-Care-Group/mailcraft/releases
+dependencies: []
+port: 3891
+path: ""
+defaultUsername: ""
+deterministicPassword: true
+torOnly: false
+environment:
+  - name: TZ
+    services:
+      - server
+    default: America/Chicago
+    note: >-
+      Your time zone, for the calendar and message times (a name like America/Chicago or
+      Europe/London). Without it, the Umbrel's own time zone is used.
+  - name: NEKO_DESKTOP_SCREEN
+    services:
+      - server
+    default: 1920x1080@30
+    options:
+      - 1920x1080@30
+      - 1600x900@30
+      - 1366x768@30
+      - 2560x1440@30
+    note: >-
+      Size of MailCraft's screen. Smaller sizes are lighter on the Umbrel's processor.
+  - name: MAILCRAFT_EXTRA_ADDRESSES
+    services:
+      - server
+    note: >-
+      Optional. Other addresses browsers use to reach this Umbrel, separated by spaces (for
+      example a second network). The LAN and Tailscale addresses are found by themselves.
