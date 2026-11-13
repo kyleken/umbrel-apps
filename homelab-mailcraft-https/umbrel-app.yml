@@ -47,3 +47,12 @@ environment:
     note: >-
       Your time zone, for the calendar and message times (a name like America/Chicago or
       Europe/London).
+  - name: MAILCRAFT_SIGNIN_BROWSER
+    services:
+      - server
+    default: chromium
+    options:
+      - chromium
+      - firefox
+    note: >-
+      The browser that opens for Microsoft and Google sign-in.

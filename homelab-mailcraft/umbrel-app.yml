@@ -62,3 +62,12 @@ environment:
     note: >-
       Optional. Other addresses browsers use to reach this Umbrel, separated by spaces (for
       example a second network). The LAN and Tailscale addresses are found by themselves.
+  - name: MAILCRAFT_SIGNIN_BROWSER
+    services:
+      - server
+    default: chromium
+    options:
+      - chromium
+      - firefox
+    note: >-
+      The browser that opens for Microsoft and Google sign-in.

@@ -47,7 +47,7 @@ RUN set -eux; \
       libxkbcommon0 libxkbcommon-x11-0 libx11-6 libx11-xcb1 libxcursor1 libxi6 libxrandr2 \
       libegl1 libgl1-mesa-dri libvulkan1 mesa-vulkan-drivers \
       dbus dbus-bin gnome-keyring xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils \
-      ca-certificates firefox-esr fonts-dejavu-core fonts-liberation2 \
+      ca-certificates chromium firefox-esr fonts-dejavu-core fonts-liberation2 \
       iproute2 socat; \
     apt-get clean -y; \
     rm -rf /var/lib/apt/lists/* /var/cache/apt/*; \
@@ -72,7 +72,7 @@ ENV NEKO_DESKTOP_SCREEN=1920x1080@30 \
     NEKO_SESSION_IMPLICIT_HOSTING=true \
     NEKO_FILETRANSFER_ENABLED=true \
     NEKO_FILETRANSFER_DIR=/home/neko/Files \
-    BROWSER=firefox-esr \
+    BROWSER=/usr/local/bin/mailcraft-browser \
     XDG_CURRENT_DESKTOP=openbox
 
 CMD ["/usr/local/bin/mailcraft-neko-start"]

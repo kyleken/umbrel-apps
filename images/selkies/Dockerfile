@@ -52,15 +52,15 @@ RUN apt-get update \
       libegl1 libgl1-mesa-dri libvulkan1 mesa-vulkan-drivers \
       # Session bus, password storage and the file chooser used by Open/Save/Attach
       dbus dbus-bin gnome-keyring xdg-desktop-portal xdg-desktop-portal-gtk xdg-utils \
-      # TLS certificates, a browser for Microsoft sign-in pages, fonts for HTML mail
-      ca-certificates firefox-esr fonts-dejavu-core fonts-liberation2 \
+      # TLS certificates, browsers for sign-in pages, fonts for HTML mail
+      ca-certificates chromium firefox-esr fonts-dejavu-core fonts-liberation2 \
  && apt-get autoclean \
  && rm -rf /var/lib/apt/lists/* /var/tmp/* /tmp/*
 
 COPY --from=build /out/mailcraft /usr/local/bin/mailcraft
 COPY common/root/ /
 COPY selkies/root/ /
-RUN chmod 755 /usr/local/bin/mailcraft-session
+RUN chmod 755 /usr/local/bin/mailcraft-session /usr/local/bin/mailcraft-browser
 
 EXPOSE 3000
 VOLUME /config

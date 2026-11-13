@@ -1,0 +1,25 @@
+#!/bin/bash
+# Opens the web pages MailCraft asks for (mainly the Microsoft and Google sign-in pages).
+# MailCraft runs the program named in $BROWSER with the page's address and nothing else, so
+# this wrapper picks the browser and gives it the options it needs inside a container.
+#
+# MAILCRAFT_SIGNIN_BROWSER chooses it: chromium (the default) or firefox.
+set -u
+
+case "${MAILCRAFT_SIGNIN_BROWSER:-chromium}" in
+  firefox | firefox-esr)
+    exec firefox-esr "$@"
+    ;;
+  *)
+    # --no-sandbox: Chromium's sandbox needs kernel features containers don't get.
+    # --test-type hides the warning bar that --no-sandbox would otherwise show.
+    # Its own profile, so sign-in pages never see old cookies from another browser.
+    exec chromium \
+      --no-sandbox --test-type \
+      --no-first-run --no-default-browser-check \
+      --password-store=basic \
+      --ozone-platform-hint=auto \
+      --user-data-dir="$HOME/.config/mailcraft-signin-chromium" \
+      "$@"
+    ;;
+esac

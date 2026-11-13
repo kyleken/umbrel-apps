@@ -51,7 +51,8 @@ app.
 ## Using it (both apps)
 
 - **Accounts:** Microsoft 365 and Outlook.com sign in on Microsoft's page, which opens in a
-  Firefox window inside the stream. For Gmail, use an app password (Google Account › Security ›
+  Chromium window inside the stream (switch to Firefox with `MAILCRAFT_SIGNIN_BROWSER` in the
+  app's settings). For Gmail, use an app password (Google Account › Security ›
   App passwords). IMAP/SMTP servers work as usual. "Remember password" stores passwords in a
   keyring inside the app's data, encrypted with a key only this Umbrel app has.
 - **Several computers:** everyone sees and controls the same screen, like screen sharing.

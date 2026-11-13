@@ -25,8 +25,9 @@ from_container_env() {
 from_container_env MAILCRAFT_KEYRING_PASSWORD
 from_container_env TZ
 
-# Sign-in pages open in the container's Firefox; the portal uses its GTK backend (portals.conf).
-export BROWSER="${BROWSER:-firefox-esr}"
+# Sign-in pages open through mailcraft-browser (Chromium, or Firefox if MAILCRAFT_SIGNIN_BROWSER
+# says so); the portal uses its GTK backend (portals.conf).
+export BROWSER=/usr/local/bin/mailcraft-browser
 export XDG_CURRENT_DESKTOP="${XDG_CURRENT_DESKTOP:-labwc}"
 
 # Bus-activated services (portal, keyring) need to know which display to draw on.
