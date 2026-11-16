@@ -25,11 +25,19 @@ if (-not $w) {
   for ($i = 0; $i -lt 60 -and -not $w; $i++) { sleep -m 500; $w = W }
 }
 if ($w) {
-  Add-Type -Namespace M -Name U -MemberDefinition '[DllImport("user32.dll")] public static extern bool ShowWindowAsync(System.IntPtr h, int c);'
-  # Restore then maximize (forces a re-fit to the current tab size); repeat while
-  # Outlook swaps its startup window for the main one.
-  foreach ($t in 0, 2, 4, 6) {
-    sleep $t; $w = W
-    if ($w) { [M.U]::ShowWindowAsync($w.MainWindowHandle, 9) | Out-Null; [M.U]::ShowWindowAsync($w.MainWindowHandle, 3) | Out-Null }
+  Add-Type -AssemblyName System.Windows.Forms
+  Add-Type -Namespace M -Name U -MemberDefinition '[DllImport("user32.dll")] public static extern bool ShowWindowAsync(IntPtr h, int c); [DllImport("user32.dll")] public static extern bool IsZoomed(IntPtr h); [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out R r); public struct R { public int L, T, X, B; }'
+  # Re-fit only when Outlook isn't maximized to the current tab size; stop once it
+  # has looked right for 3 checks in a row (about a second). Gives up after ~12 s.
+  $ok = 0
+  for ($i = 0; $i -lt 30 -and $ok -lt 3; $i++) {
+    $w = W
+    if ($w) {
+      $h = $w.MainWindowHandle; $r = New-Object M.U+R; [void][M.U]::GetWindowRect($h, [ref]$r)
+      $a = [Windows.Forms.Screen]::FromHandle($h).WorkingArea
+      if ([M.U]::IsZoomed($h) -and ($r.X - $r.L) -ge $a.Width -and ($r.B - $r.T) -ge $a.Height) { $ok++ }
+      else { $ok = 0; [void][M.U]::ShowWindowAsync($h, 9); [void][M.U]::ShowWindowAsync($h, 3) }
+    }
+    sleep -m 400
   }
 }
