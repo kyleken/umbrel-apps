@@ -26,5 +26,10 @@ if (-not $w) {
 }
 if ($w) {
   Add-Type -Namespace M -Name U -MemberDefinition '[DllImport("user32.dll")] public static extern bool ShowWindowAsync(System.IntPtr h, int c);'
-  [M.U]::ShowWindowAsync($w.MainWindowHandle, 3) | Out-Null
+  # Restore then maximize (forces a re-fit to the current tab size); repeat while
+  # Outlook swaps its startup window for the main one.
+  foreach ($t in 0, 2, 4, 6) {
+    sleep $t; $w = W
+    if ($w) { [M.U]::ShowWindowAsync($w.MainWindowHandle, 9) | Out-Null; [M.U]::ShowWindowAsync($w.MainWindowHandle, 3) | Out-Null }
+  }
 }

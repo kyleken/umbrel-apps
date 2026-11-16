@@ -4,7 +4,7 @@ name: MS Mail
 tagline: The new Outlook for Windows, in your browser
 icon: https://raw.githubusercontent.com/kyleken/umbrel_outlook_box/main/kyle-ms-mail/icon.svg
 category: files
-version: "1.7.0"
+version: "1.8.0"
 port: 18080
 path: "/#/client/T3V0bG9vawBjAGRlZmF1bHQ="
 description: >-
@@ -42,8 +42,8 @@ repo: https://github.com/kyleken/umbrel_outlook_box
 support: https://github.com/kyleken/umbrel_outlook_box/issues
 gallery: []
 releaseNotes: >-
-  The Outlook-only view now starts your Windows sign-in apps (for example
-  Sync.com or OneDrive) so they keep syncing without opening the desktop.
+  Outlook now re-fits to the browser tab when it opens or reconnects, so it
+  fills the whole window.
 dependencies: []
 defaultUsername: "outlook"
 deterministicPassword: true
