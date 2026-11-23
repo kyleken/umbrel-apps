@@ -54,6 +54,8 @@ What the package sets up:
   umbrelOS shows on the app's page. Once that profile exists the code is gone, and new
   profiles need an invite code from the admin dashboard (`INVITE_ONLY=1`).
 - Password sign-in on (`PASSWORD_LOGIN=1`), guest mode off (`ALLOW_GUEST=0`), AI Coach off.
+- The icon is openGym's own logo (`frontend/public/icon-512.png` from openGym v1.4.5, © Duarte
+  Santos, AGPL-3.0). This package is not made or endorsed by the openGym project.
 - Umbrel's own login is off for this app. It would block the phone app, and openGym has its
   own sign-in.
 
