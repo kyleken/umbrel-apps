@@ -22,7 +22,7 @@ Then from any device on your tailnet open:
 
 - MS Mail: `http://<umbrel-tailscale-name>:18080`
 - Outlook Box: `http://<umbrel-tailscale-name>:18006`, or RDP to `<umbrel-tailscale-name>:3389`
-- openGym: use its HTTPS address from Tailscale Serve (below)
+- openGym: `http://<umbrel-tailscale-name>:18090`, after setting `ORIGIN` (below)
 
 ## Notes (MS Mail and Outlook Box)
 
@@ -43,11 +43,9 @@ Then from any device on your tailnet open:
 
 ## openGym
 
-openGym signs in with passkeys, which browsers allow only over HTTPS. The package runs fine
-over plain `http://umbrel.local:18090` with a name and password, but passkeys, the iPhone
-app, offline use and notifications need HTTPS. The private way to get that is Tailscale
-Serve: a `https://<umbrel>.<tailnet>.ts.net` address with a real certificate, reachable only
-from your tailnet. Nothing here uses Tailscale Funnel or opens anything to the internet.
+openGym runs here over plain http, and you sign in with your profile name and a password.
+Use it over Tailscale, which encrypts the traffic between your devices. Nothing is opened to
+the internet.
 
 What the package sets up:
 
@@ -56,72 +54,55 @@ What the package sets up:
   umbrelOS shows on the app's page. Once that profile exists the code is gone, and new
   profiles need an invite code from the admin dashboard (`INVITE_ONLY=1`).
 - Password sign-in on (`PASSWORD_LOGIN=1`), guest mode off (`ALLOW_GUEST=0`), AI Coach off.
-- Umbrel's own login is off for this app. It would block the Tailscale Serve address and the
-  phone app, and openGym has its own sign-in.
+- Umbrel's own login is off for this app. It would block the phone app, and openGym has its
+  own sign-in.
 
-### 1. Turn on Tailscale Serve
+Over plain http you don't get passkeys, offline use, push notifications, or the iPhone app
+(the Android app can connect over http). Those need HTTPS, which can be added later without
+losing data.
 
-1. Install the **Tailscale** app on Umbrel and sign in.
-2. In the Tailscale admin console, on the **DNS** page, turn on **MagicDNS** and
-   **HTTPS Certificates**.
-3. SSH in (`ssh umbrel@umbrel.local`) and run:
+### 1. Pick one address and set ORIGIN
 
-   ```sh
-   sudo docker exec tailscale_web_1 tailscale serve --bg --https=443 http://127.0.0.1:18090
-   sudo docker exec tailscale_web_1 tailscale serve status
-   ```
+openGym accepts sign-ins from exactly one http address, the one in `ORIGIN`. Use your
+Umbrel's Tailscale name, so the same address works on the laptop and the phone, at home and
+away:
 
-   The first command may print a link to approve Serve for your tailnet; open it, then run it
-   again. `status` shows the address, such as `https://umbrel.tail1234.ts.net`. If port 443
-   is already used by another Serve setup, use `--https=8443` and add `:8443` to `ORIGIN`.
-   To undo: `sudo docker exec tailscale_web_1 tailscale serve --https=443 off`.
+- `ORIGIN=http://umbrel.tail1234.ts.net:18090` (your Umbrel's MagicDNS name from the
+  Tailscale admin console; or its `100.x` Tailscale IP if MagicDNS is off)
+- `RP_ID=umbrel.tail1234.ts.net` (the same host, no `http://`, no port)
 
-### 2. Point openGym at that address
+Type the address exactly like that on every device. `http://umbrel.local:18090`, the
+Umbrel dashboard tile, or a short name like `http://umbrel:18090` will open the page but
+refuse to sign in.
 
-Set these, then restart the app:
+On umbrelOS 2.x, set both in the app's settings in umbrelOS, then restart the app. On
+umbrelOS 1.x, put the two lines in `~/umbrel/app-data/kyle-opengym/data/settings/opengym.env`
+(with `sudo`) and restart the app. That file, if present, wins over everything else.
 
-- `ORIGIN=https://umbrel.tail1234.ts.net` (your address, no trailing slash)
-- `RP_ID=umbrel.tail1234.ts.net` (the same host, no `https://`)
-
-On umbrelOS 2.x, set them in the app's settings in umbrelOS. On umbrelOS 1.x, put the two
-lines in `~/umbrel/app-data/kyle-opengym/data/settings/opengym.env` (with `sudo`). That file,
-if present, wins over everything else.
-
-Do this before you register: passkeys are bound to `RP_ID`, so changing it later makes
-existing passkeys stop working (passwords keep working).
-
-### 3. Create your admin profile
+### 2. Create your admin profile
 
 1. Copy the password from openGym's page in umbrelOS.
-2. Open your `https://…ts.net` address, choose **Create new profile**, and paste it as the
-   invite code (the field keeps the first 40 characters; that's expected).
-3. Use a passkey. Then, as a fallback, set a long password in **Settings → Account →
-   Password**.
-4. Check **Settings → Account → Admin dashboard** is there.
+2. Open your `ORIGIN` address, choose **Create new profile**, pick a name and a long
+   password (10+ characters; a passphrase is best), and paste the copied password as the
+   invite code. The field keeps the first 40 characters; that's expected.
+3. Check **Settings → Account → Admin dashboard** is there.
 
-Skipping Tailscale for now? Create the profile at `http://umbrel.local:18090` with a
-password instead, and switch `ORIGIN`/`RP_ID` later; then add a passkey from Settings.
+### 3. Phone and laptop
 
-### 4. Phone
+Install Tailscale on each device and connect it to the same tailnet. Open the `ORIGIN`
+address and sign in with your profile name and password. On a phone you can add it to the
+home screen as a shortcut. Tailscale has to be connected to use openGym, at home too.
 
-Install Tailscale on the phone and connect it to the same tailnet, then either:
+On Android you can also use the openGym app: choose **Connect to my server**, type the
+`ORIGIN` address including `http://`, and enter the code from **Settings → Account → Pair
+the mobile app** in a signed-in browser. The app then works offline and syncs when Tailscale
+reconnects.
 
-- open the `https://…ts.net` address, sign in, and add it to the home screen; or
-- install the openGym app (App Store, or the APK on Android), choose **Connect to my
-  server**, enter the address, and enter the code from **Settings → Account → Pair the
-  mobile app** on a signed-in browser.
+### 4. Back up
 
-Both keep working offline and sync when Tailscale reconnects.
-
-After switching to HTTPS, the Umbrel dashboard tile opens `http://umbrel.local:18090`,
-where sign-in is refused. Use the `ts.net` address (on umbrelOS 2.x,
-`https://umbrel.local:18090` also works for password sign-in).
-
-### 5. Back up
-
-Everything is in `~/umbrel/app-data/kyle-opengym/data/opengym` (accounts, passkeys,
-workouts, uploads, and `secret`, which signs sessions). Umbrel's own backups include it. For
-a manual copy, stop the app in umbrelOS, then:
+Everything is in `~/umbrel/app-data/kyle-opengym/data/opengym` (accounts, workouts,
+uploads, and `secret`, which signs sessions). Umbrel's own backups include it. For a manual
+copy, stop the app in umbrelOS, then:
 
 ```sh
 sudo tar czf ~/opengym-$(date +%F).tar.gz -C ~/umbrel/app-data/kyle-opengym/data opengym
@@ -130,6 +111,11 @@ sudo tar czf ~/opengym-$(date +%F).tar.gz -C ~/umbrel/app-data/kyle-opengym/data
 Restore by stopping the app, extracting that archive into the same folder, and starting it.
 Each person can also export their own data in **Settings → Data & backup**. The archive holds
 password hashes and the activity log, so keep it private.
+
+### Forgot the password?
+
+Admins can't reset their own password from the dashboard. Keep it in a password manager.
+If it's lost anyway, see "Recovery codes" in openGym's `docs/SELF_HOSTING.md`.
 
 ### Updating
 

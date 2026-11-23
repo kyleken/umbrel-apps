@@ -8,17 +8,17 @@ environment:
       - api
     default: "http://umbrel.local:18090"
     note: >-
-      The exact address you open openGym at, with no trailing slash. For passkeys and the
-      phone app, set it to your Tailscale Serve address, such as
-      https://umbrel.tail1234.ts.net, and set RP_ID to match. Plain http:// sign-ins are
-      accepted only from this address.
+      The exact address you open openGym at, with no trailing slash, such as
+      http://umbrel.tail1234.ts.net:18090 for your Umbrel's Tailscale name. Sign-ins are
+      accepted only from this address. Set RP_ID to the same host.
   - name: RP_ID
     services:
       - api
     default: "umbrel.local"
     note: >-
-      The host name in ORIGIN, with no https:// and no port, such as umbrel.tail1234.ts.net.
-      Passkeys belong to it: changing it later makes existing passkeys stop working.
+      The host name in ORIGIN, with no http:// and no port, such as umbrel.tail1234.ts.net.
+      Passkeys (HTTPS only) belong to it, so changing it later makes existing passkeys stop
+      working.
   - name: PASSWORD_LOGIN
     services:
       - api
@@ -53,15 +53,15 @@ name: openGym
 version: "1.4.5"
 tagline: Self-hosted gym tracker for workouts, routines and body weight
 description: >-
-  **First run:** open the app, choose Create new profile, and paste the password shown on
+  **First run:** set ORIGIN in this app's settings to the address you'll use (such as your
+  Umbrel's Tailscale name, http://umbrel.tail1234.ts.net:18090) and restart the app. Then open
+  that address, choose Create new profile, use a password, and paste the password shown on
   this page as the invite code. That first profile becomes the admin, and the code stops
-  working once it's used. On plain http, create the profile with a password (passkeys need
-  HTTPS).
+  working once it's used. Steps are in the store's README.
 
 
-  **Passkeys, the phone app and offline use need HTTPS.** Use Tailscale Serve for a private
-  HTTPS address on your tailnet, then set ORIGIN and RP_ID in this app's settings. Steps are
-  in the store's README.
+  Over plain http you sign in with a name and password. Passkeys, offline use, notifications
+  and the iPhone app need HTTPS.
 
 
   openGym plans routines, logs workouts (supersets and cardio too), and tracks your body
@@ -69,7 +69,7 @@ description: >-
   devices. The AI Coach is off and needs an admin to set it up.
 
 
-  Back up the app data folder data/opengym: it holds every profile, passkey and workout.
+  Back up the app data folder data/opengym: it holds every profile and workout.
 
 
   This is a community package. It is not made or endorsed by the openGym project.
