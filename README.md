@@ -22,7 +22,7 @@ Then from any device on your tailnet open:
 
 - MS Mail: `http://<umbrel-tailscale-name>:18080`
 - Outlook Box: `http://<umbrel-tailscale-name>:18006`, or RDP to `<umbrel-tailscale-name>:3389`
-- openGym: `http://<umbrel-tailscale-name>:18090`, after setting `ORIGIN` (below)
+- openGym: `http://umbrel:18090` (or another Tailscale form), after setting `ORIGIN` (below)
 
 ## Notes (MS Mail and Outlook Box)
 
@@ -79,9 +79,24 @@ dashboard tile, opens the page but refuses to sign in ("This server only takes c
 at …"). To check what's set:
 `sudo docker logs kyle-opengym_api_1 2>&1 | grep "gym-api on" | tail -1`.
 
-On umbrelOS 2.x, set both in the app's settings in umbrelOS, then restart the app. On
-umbrelOS 1.x, put the two lines in `~/umbrel/app-data/kyle-opengym/data/settings/opengym.env`
-(with `sudo`) and restart the app. That file, if present, wins over everything else.
+**umbrelOS 2.x** (tested on 2.0): right-click the openGym icon on the home screen, open
+its settings, and set `ORIGIN` and `RP_ID` under the environment variables. Save, then
+right-click the icon again and choose **Restart**. The defaults are `http://umbrel.local:18090`
+and `umbrel.local`.
+
+**umbrelOS 1.x**, which has no app settings, or as a fallback on 2.x: open **Settings →
+Advanced settings → Terminal → umbrelOS** (or SSH in) and put the two lines in a file, then
+restart the app. This file, if present, wins over everything else:
+
+```sh
+sudo tee ~/umbrel/app-data/kyle-opengym/data/settings/opengym.env >/dev/null <<'EOF'
+ORIGIN=http://umbrel:18090
+RP_ID=umbrel
+EOF
+```
+
+Either way, confirm with the log command above: it should end with
+`(rpID=umbrel, origin=http://umbrel:18090)` (or your choice).
 
 ### 2. Create your admin profile
 

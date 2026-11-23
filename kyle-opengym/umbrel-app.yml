@@ -9,14 +9,14 @@ environment:
     default: "http://umbrel.local:18090"
     note: >-
       The exact address you open openGym at, with no trailing slash, such as
-      http://umbrel.tail1234.ts.net:18090 for your Umbrel's Tailscale name. Sign-ins are
-      accepted only from this address. Set RP_ID to the same host.
+      http://umbrel:18090 for your Umbrel's Tailscale (MagicDNS) name. Sign-ins are
+      accepted only from this address. Set RP_ID to the same host, then restart the app.
   - name: RP_ID
     services:
       - api
     default: "umbrel.local"
     note: >-
-      The host name in ORIGIN, with no http:// and no port, such as umbrel.tail1234.ts.net.
+      The host name in ORIGIN, with no http:// and no port, such as umbrel.
       Passkeys (HTTPS only) belong to it, so changing it later makes existing passkeys stop
       working.
   - name: PASSWORD_LOGIN
@@ -53,9 +53,9 @@ name: openGym
 version: "1.4.5"
 tagline: Self-hosted gym tracker for workouts, routines and body weight
 description: >-
-  **First run:** set ORIGIN in this app's settings to the address you'll use (such as your
-  Umbrel's Tailscale name, http://umbrel.tail1234.ts.net:18090) and restart the app. Then open
-  that address, choose Create new profile, use a password, and paste the password shown on
+  **First run:** set ORIGIN and RP_ID in this app's settings to the address you'll use (such
+  as your Umbrel's Tailscale name: http://umbrel:18090 and umbrel) and restart the app. Then
+  open that address, choose Create new profile, use a password, and paste the password shown on
   this page as the invite code. That first profile becomes the admin, and the code stops
   working once it's used. Steps are in the store's README.
 
