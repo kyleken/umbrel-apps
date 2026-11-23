@@ -1,0 +1,118 @@
+version: "3.7"
+
+services:
+  app_proxy:
+    environment:
+      # Format: <app-id>_<docker-service-name>_1
+      APP_HOST: kyle-opengym_web_1
+      APP_PORT: 8080
+      # openGym has its own sign-in (passkeys, passwords, the phone app's token), and Umbrel's
+      # login gets in its way: it can't follow you to the Tailscale Serve HTTPS address, it
+      # answers the phone app's /api calls with a login page, and it hides the home-screen
+      # icon and manifest from iOS. Signup is closed by INVITE_ONLY plus the setup code below.
+      PROXY_AUTH_ADD: "false"
+
+  # Node API: accounts, passkeys, sync. Everything it stores is in /data.
+  api:
+    image: ghcr.io/duartesantos8/opengym-api:1.4.5
+    restart: on-failure
+    stop_grace_period: 30s
+    init: true
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        # Optional overrides for umbrelOS 1.x (no per-app settings there). Wins over everything.
+        if [ -f /settings/opengym.env ]; then set -a; . /settings/opengym.env; set +a; fi
+        node -e "$$KYLE_OPENGYM_SETUP"
+        exec node server.js
+    environment:
+      PORT: "3000"
+      DATA_DIR: /data
+      # Only the web container can reach the API, and it overwrites X-Forwarded-For.
+      TRUST_PROXY: "1"
+      RP_NAME: openGym
+      # The address you open openGym at. Passkeys work only at an https:// ORIGIN, and plain
+      # http:// sign-ins are accepted only from exactly this address. Change both in the app's
+      # settings in umbrelOS once Tailscale Serve is on (see the README).
+      RP_ID: ${DEVICE_DOMAIN_NAME}
+      ORIGIN: http://${DEVICE_DOMAIN_NAME}:18090
+      # Name-and-password sign-in, for plain http and as a fallback to passkeys.
+      PASSWORD_LOGIN: "1"
+      # The first profile becomes the admin and owner.
+      FIRST_USER_ADMIN: "1"
+      # New profiles need an invite code. The first one uses the setup code below; after
+      # that, codes come from the admin dashboard.
+      INVITE_ONLY: "1"
+      # No "Continue without account" (guest data never reaches the server).
+      ALLOW_GUEST: "0"
+      # One-time setup code for the first profile: the app password umbrelOS shows on the
+      # app page. KYLE_OPENGYM_SETUP adds it as an invite while there are no profiles and
+      # removes it once one exists.
+      UMBREL_SETUP_CODE: ${APP_PASSWORD}
+      KYLE_OPENGYM_SETUP: |
+        // Umbrel first-run guard for openGym. Runs before server.js on every start.
+        // While the instance has no profiles, it adds a one-time invite whose code is the
+        // Umbrel app password, so only someone who can see that password can create the
+        // first (admin) profile. Once a profile exists, any unused setup code is removed.
+        try {
+          const fs = require('fs');
+          const file = (process.env.DATA_DIR || '/data') + '/db.json';
+          const code = String(process.env.UMBREL_SETUP_CODE || '').trim().toUpperCase();
+          let db = null;
+          try { db = JSON.parse(fs.readFileSync(file, 'utf8')); }
+          catch (e) {
+            if (e.code !== 'ENOENT') { console.error('[umbrel-setup] db.json unreadable, leaving it to openGym'); process.exit(0); }
+          }
+          if (db !== null && (typeof db !== 'object' || Array.isArray(db))) process.exit(0);
+          const users = db && Array.isArray(db.users) ? db.users.length : 0;
+          db = db || { users: [], creds: [], subs: [], invites: [] };
+          const invites = Array.isArray(db.invites) ? db.invites : [];
+          const kept = invites.filter(i => !(i && i.umbrelSetup && !i.usedBy));
+          let changed = kept.length !== invites.length;
+          if (users === 0) {
+            if (code.length >= 16) {
+              const created = new Date().toISOString();
+              // One code only, so nothing is left open once it is used. The sign-up form caps the
+              // invite field at 40 characters, so a pasted app password arrives as its first 40.
+              kept.push({ code: code.slice(0, 40), note: 'Umbrel setup code', createdBy: 'umbrel', created, umbrelSetup: true });
+              changed = true;
+              console.log('[umbrel-setup] No profiles yet. Create the first one with the app password from the app page in umbrelOS as the invite code. It becomes the admin.');
+            } else {
+              console.log('[umbrel-setup] No setup code available; the first profile needs INVITE_ONLY=0.');
+            }
+          } else if (changed) {
+            console.log('[umbrel-setup] A profile exists: removed the unused setup code.');
+          }
+          if (changed) {
+            db.invites = kept;
+            const tmp = file + '.umbrel-tmp';
+            fs.writeFileSync(tmp, JSON.stringify(db, null, 2), { mode: 0o600 });
+            fs.renameSync(tmp, file);
+          }
+        } catch (e) {
+          console.error('[umbrel-setup] skipped:', e && e.message);
+        }
+    volumes:
+      # users, passkeys, workouts, uploads, session secret: back this up
+      - ${APP_DATA_DIR}/data/opengym:/data
+      - ${APP_DATA_DIR}/data/settings:/settings:ro
+
+  # nginx: serves the web app and proxies /api to the API on the same origin.
+  web:
+    image: ghcr.io/duartesantos8/opengym-web:1.4.5
+    restart: on-failure
+    depends_on:
+      - api
+    environment:
+      NGINX_PORT: "8080"
+      # Container names, not service names: Umbrel puts every app on one shared network,
+      # where a bare "api" or "mcp" could be another app's container.
+      BACKEND: kyle-opengym_api_1
+      PORT: "3000"
+      RESOLVER: 127.0.0.11
+      CF_CONNECTING_IP: ""
+      BASE_PATH: ""
+      MEDIA_UPLOAD_MAX: 112m
+      MCP_BACKEND: kyle-opengym_mcp_1
+      MCP_PORT: "3100"

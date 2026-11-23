@@ -1,0 +1,93 @@
+manifestVersion: 1
+id: kyle-opengym
+storage:
+  dataRoot: data
+environment:
+  - name: ORIGIN
+    services:
+      - api
+    default: "http://umbrel.local:18090"
+    note: >-
+      The exact address you open openGym at, with no trailing slash. For passkeys and the
+      phone app, set it to your Tailscale Serve address, such as
+      https://umbrel.tail1234.ts.net, and set RP_ID to match. Plain http:// sign-ins are
+      accepted only from this address.
+  - name: RP_ID
+    services:
+      - api
+    default: "umbrel.local"
+    note: >-
+      The host name in ORIGIN, with no https:// and no port, such as umbrel.tail1234.ts.net.
+      Passkeys belong to it: changing it later makes existing passkeys stop working.
+  - name: PASSWORD_LOGIN
+    services:
+      - api
+    default: "1"
+    options:
+      - "1"
+      - "0"
+    note: >-
+      1 allows signing in with your profile name and a password, next to passkeys. Before
+      setting 0, add a passkey to every profile that only has a password.
+  - name: INVITE_ONLY
+    services:
+      - api
+    default: "1"
+    options:
+      - "1"
+      - "0"
+    note: >-
+      1 means new profiles need an invite code from the admin dashboard. 0 lets anyone who
+      can reach openGym create a profile.
+  - name: ALLOW_GUEST
+    services:
+      - api
+    default: "0"
+    options:
+      - "0"
+      - "1"
+    note: >-
+      1 shows "Continue without account", which keeps data only in that browser.
+category: files
+name: openGym
+version: "1.4.5"
+tagline: Self-hosted gym tracker for workouts, routines and body weight
+description: >-
+  **First run:** open the app, choose Create new profile, and paste the password shown on
+  this page as the invite code. That first profile becomes the admin, and the code stops
+  working once it's used. On plain http, create the profile with a password (passkeys need
+  HTTPS).
+
+
+  **Passkeys, the phone app and offline use need HTTPS.** Use Tailscale Serve for a private
+  HTTPS address on your tailnet, then set ORIGIN and RP_ID in this app's settings. Steps are
+  in the store's README.
+
+
+  openGym plans routines, logs workouts (supersets and cardio too), and tracks your body
+  weight and progress. Each profile's data stays on your Umbrel and syncs between your
+  devices. The AI Coach is off and needs an admin to set it up.
+
+
+  Back up the app data folder data/opengym: it holds every profile, passkey and workout.
+
+
+  This is a community package. It is not made or endorsed by the openGym project.
+releaseNotes: ""
+
+developer: Duarte Santos
+website: https://opengym.ch
+dependencies: []
+repo: https://github.com/DuarteSantos8/openGym
+support: https://github.com/DuarteSantos8/openGym/issues
+
+port: 18090
+gallery: []
+path: ""
+icon: https://raw.githubusercontent.com/kyleken/umbrel_outlook_box/main/kyle-opengym/icon.svg
+
+defaultUsername: ""
+deterministicPassword: true
+
+submitter: kyleken
+submission: https://github.com/kyleken/umbrel_outlook_box
