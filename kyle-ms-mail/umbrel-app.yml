@@ -2,7 +2,7 @@ manifestVersion: 1
 id: kyle-ms-mail
 name: MS Mail
 tagline: The new Outlook for Windows, in your browser
-icon: https://raw.githubusercontent.com/kyleken/umbrel_outlook_box/main/kyle-ms-mail/icon.svg
+icon: https://raw.githubusercontent.com/kyleken/umbrel-apps/main/kyle-ms-mail/icon.svg
 category: files
 version: "1.9.0"
 port: 18080
@@ -37,9 +37,9 @@ description: >-
 developer: Apache Guacamole and dockur
 website: https://guacamole.apache.org
 submitter: kyleken
-submission: https://github.com/kyleken/umbrel_outlook_box
-repo: https://github.com/kyleken/umbrel_outlook_box
-support: https://github.com/kyleken/umbrel_outlook_box/issues
+submission: https://github.com/kyleken/umbrel-apps
+repo: https://github.com/kyleken/umbrel-apps
+support: https://github.com/kyleken/umbrel-apps/issues
 gallery: []
 releaseNotes: >-
   Faster, flicker-free maximize: Outlook is only re-fitted when it isn't

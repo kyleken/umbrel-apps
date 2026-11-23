@@ -19,7 +19,7 @@ services:
       DISK_SIZE: "64G"
       USERNAME: "outlook"
       PASSWORD: ${APP_PASSWORD} # Shown on the app's page in umbrelOS
-      COMMAND: 'powershell -NoProfile -ExecutionPolicy Bypass -Command "New-Item -ItemType Directory -Force C:\OEM | Out-Null; Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/kyleken/umbrel_outlook_box/main/windows-setup/setup.ps1 -OutFile C:\OEM\setup.ps1; & C:\OEM\setup.ps1"'
+      COMMAND: 'powershell -NoProfile -ExecutionPolicy Bypass -Command "New-Item -ItemType Directory -Force C:\OEM | Out-Null; Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/kyleken/umbrel-apps/main/windows-setup/setup.ps1 -OutFile C:\OEM\setup.ps1; & C:\OEM\setup.ps1"'
     devices:
       - /dev/kvm
       - /dev/net/tun

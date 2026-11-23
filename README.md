@@ -13,7 +13,7 @@ Install MS Mail or Outlook Box, not both: each one runs its own Windows VM.
 ## Add to Umbrel
 
 In umbrelOS: **App Store → ⋯ (top right) → Community App Stores**, paste
-`https://github.com/kyleken/umbrel_outlook_box`, click **Add**, then **Open**.
+`https://github.com/kyleken/umbrel-apps`, click **Add**, then **Open**.
 
 ## Reach it over Tailscale
 
@@ -32,7 +32,7 @@ Then from any device on your tailnet open:
   installs the new Outlook, allows RemoteApp, and turns off automatic sign-in. Its log
   is at `C:\OEM\setup-log.txt`. To re-run it by hand, open PowerShell as
   Administrator in Windows and run:
-  `iwr -UseBasicParsing https://raw.githubusercontent.com/kyleken/umbrel_outlook_box/main/windows-setup/setup.ps1 | iex`
+  `iwr -UseBasicParsing https://raw.githubusercontent.com/kyleken/umbrel-apps/main/windows-setup/setup.ps1 | iex`
 - Both apps install the full Windows 11 Enterprise LTSC 2024 image (the
   `11l` evaluation image expires and shuts down every hour). Activate it with
   your own key inside Windows: Settings → System → Activation → Change

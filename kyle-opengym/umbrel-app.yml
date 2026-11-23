@@ -84,10 +84,10 @@ support: https://github.com/DuarteSantos8/openGym/issues
 port: 18090
 gallery: []
 path: ""
-icon: https://raw.githubusercontent.com/kyleken/umbrel_outlook_box/main/kyle-opengym/icon.png
+icon: https://raw.githubusercontent.com/kyleken/umbrel-apps/main/kyle-opengym/icon.png
 
 defaultUsername: ""
 deterministicPassword: true
 
 submitter: kyleken
-submission: https://github.com/kyleken/umbrel_outlook_box
+submission: https://github.com/kyleken/umbrel-apps

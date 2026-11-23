@@ -1,7 +1,7 @@
 # One-time Windows setup for the Outlook Box / MS Mail Umbrel apps.
 # dockur/windows runs this at the end of the unattended install (via COMMAND).
 # Safe to run again by hand: open PowerShell as Administrator and run
-#   iwr -UseBasicParsing https://raw.githubusercontent.com/kyleken/umbrel_outlook_box/main/windows-setup/setup.ps1 | iex
+#   iwr -UseBasicParsing https://raw.githubusercontent.com/kyleken/umbrel-apps/main/windows-setup/setup.ps1 | iex
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference    = 'SilentlyContinue'
