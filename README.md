@@ -65,17 +65,19 @@ losing data.
 
 ### 1. Pick one address and set ORIGIN
 
-openGym accepts sign-ins from exactly one http address, the one in `ORIGIN`. Use your
-Umbrel's Tailscale name, so the same address works on the laptop and the phone, at home and
-away:
+openGym accepts sign-ins from exactly one http address, the one in `ORIGIN`. Use the
+address you type to reach your Umbrel over Tailscale, so the same one works on the laptop
+and the phone, at home and away. Any of these works; pick one and use only that:
 
-- `ORIGIN=http://umbrel.tail1234.ts.net:18090` (your Umbrel's MagicDNS name from the
-  Tailscale admin console; or its `100.x` Tailscale IP if MagicDNS is off)
-- `RP_ID=umbrel.tail1234.ts.net` (the same host, no `http://`, no port)
+- the MagicDNS short name: `ORIGIN=http://umbrel:18090`, `RP_ID=umbrel`
+- the full MagicDNS name: `ORIGIN=http://umbrel.tail1234.ts.net:18090`,
+  `RP_ID=umbrel.tail1234.ts.net`
+- the Tailscale IP, if MagicDNS is off: `ORIGIN=http://100.x.y.z:18090`, `RP_ID=100.x.y.z`
 
-Type the address exactly like that on every device. `http://umbrel.local:18090`, the
-Umbrel dashboard tile, or a short name like `http://umbrel:18090` will open the page but
-refuse to sign in.
+No trailing slash. Any other address, including `http://umbrel.local:18090` and the Umbrel
+dashboard tile, opens the page but refuses to sign in ("This server only takes changes made
+at …"). To check what's set:
+`sudo docker logs kyle-opengym_api_1 2>&1 | grep "gym-api on" | tail -1`.
 
 On umbrelOS 2.x, set both in the app's settings in umbrelOS, then restart the app. On
 umbrelOS 1.x, put the two lines in `~/umbrel/app-data/kyle-opengym/data/settings/opengym.env`
